@@ -1,16 +1,16 @@
 # Installation
 
 ```
-go get -u -d github.com/cclin81922/osbapi-sdk/pkg/sdk
+go get -u -d github.com/cclin81922/osbapi-sdk/pkg/osbapisdk
 ```
 
 # Package Usage
 
 ```
-import "github.com/cclin81922/osbapi-sdk/pkg/sdk"
+import "github.com/cclin81922/osbapi-sdk/pkg/osbapisdk"
 
 func demo(message string) {
-    reply := sdk.Echo(message)
+    reply := osbapisdk.Echo(message)
     fmt.Println(reply)
 }
 ```
