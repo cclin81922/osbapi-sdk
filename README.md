@@ -20,5 +20,6 @@ func demo(message string) {
 Run all tests
 
 ```
+osbapibaas -port=8443
 go test github.com/cclin81922/osbapi-sdk/pkg/osbapisdk
 ```
