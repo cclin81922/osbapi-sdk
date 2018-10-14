@@ -10,7 +10,15 @@ go get -u -d github.com/cclin81922/osbapi-sdk/pkg/osbapisdk
 import "github.com/cclin81922/osbapi-sdk/pkg/osbapisdk"
 
 func demo(message string) {
-    reply := osbapisdk.Echo(message)
+    reply, err := osbapisdk.Echo(message)
     fmt.Println(reply)
 }
+```
+
+# For Developer
+
+Run all tests
+
+```
+go test github.com/cclin81922/osbapi-sdk/pkg/osbapisdk
 ```
