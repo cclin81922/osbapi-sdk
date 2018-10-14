@@ -1,13 +1,13 @@
 package osbapisdk
 
 import (
-	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -66,7 +66,7 @@ func Echo(message string) (string, error) {
 	client := &http.Client{Transport: transport}
 
 	// Send HTTP request
-	resp, err := client.Post(api, "", bytes.NewBufferString(message))
+	resp, err := client.Post(api, "Content-Type: application/x-www-form-urlencoded", strings.NewReader(message))
 	if err != nil {
 		return "", err
 	}
