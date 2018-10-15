@@ -20,6 +20,10 @@ func demo(message string) {
 Run all tests
 
 ```
+go get -u github.com/cclin81922/osbapi-baas/cmd/osbapibaas
+export PATH=$PATH:~/go/bin
 osbapibaas -port=8443
+
+echo "127.0.0.1   localhost.localdomain" >> /etc/hosts
 go test github.com/cclin81922/osbapi-sdk/pkg/osbapisdk
 ```
