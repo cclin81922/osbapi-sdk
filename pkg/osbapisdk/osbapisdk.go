@@ -29,6 +29,7 @@ var (
 	keyFile     string
 	certFile    string
 	baasClient  *http.Client
+	baseurl     string
 )
 
 func newClient() (*http.Client, error) {
@@ -71,23 +72,23 @@ func init() {
 }
 
 // Setup ...
-func Setup(baseurl, ca, key, cert string) {
-	baseurlFile = baseurl
+func Setup(base, ca, key, cert string) {
+	baseurlFile = base
 	caFile = ca
 	keyFile = key
 	certFile = cert
+
+	// Setup baseurl
+	baseurlBytes, err := ioutil.ReadFile(baseurlFile)
+	if err != nil {
+		panic(err)
+	}
+	baseurl = string(baseurlBytes)
 }
 
 // Echo ...
 func Echo(message string) (string, error) {
-	// Setup baas base url
-	baseurlBytes, err := ioutil.ReadFile(baseurlFile)
-	if err != nil {
-		return "", err
-	}
-	baseurl := string(baseurlBytes)
-
-	// Setup baas api
+	// Setup baas api path
 	api := fmt.Sprintf("%s/echo", baseurl)
 
 	// Setup baas client
