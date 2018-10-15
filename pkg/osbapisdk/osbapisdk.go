@@ -19,7 +19,6 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -29,7 +28,40 @@ var (
 	caFile      string
 	keyFile     string
 	certFile    string
+	baasClient  *http.Client
 )
+
+func newClient() (*http.Client, error) {
+	if baasClient != nil {
+		return baasClient, nil
+	}
+
+	// Load client cert
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// Load CA cert
+	caCert, err := ioutil.ReadFile(caFile)
+	if err != nil {
+		return nil, err
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	// Setup HTTPS client
+	tlsConfig := &tls.Config{
+		Certificates:       []tls.Certificate{cert},
+		RootCAs:            caCertPool,
+		InsecureSkipVerify: true,
+	}
+	tlsConfig.BuildNameToCertificate()
+	transport := &http.Transport{TLSClientConfig: tlsConfig}
+	baasClient = &http.Client{Transport: transport}
+
+	return baasClient, nil
+}
 
 func init() {
 	baseurlFile = "/etc/osbapi-svc-credential/baseurl"
@@ -48,36 +80,21 @@ func Setup(baseurl, ca, key, cert string) {
 
 // Echo ...
 func Echo(message string) (string, error) {
+	// Setup baas base url
 	baseurlBytes, err := ioutil.ReadFile(baseurlFile)
 	if err != nil {
 		return "", err
 	}
 	baseurl := string(baseurlBytes)
+
+	// Setup baas api
 	api := fmt.Sprintf("%s/echo", baseurl)
 
-	// Load client cert
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	// Setup baas client
+	client, err := newClient()
 	if err != nil {
 		return "", err
 	}
-
-	// Load CA cert
-	caCert, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
-
-	// Setup HTTPS client
-	tlsConfig := &tls.Config{
-		Certificates:       []tls.Certificate{cert},
-		RootCAs:            caCertPool,
-		InsecureSkipVerify: true,
-	}
-	tlsConfig.BuildNameToCertificate()
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	client := &http.Client{Transport: transport}
 
 	// Send HTTP request
 	resp, err := client.Post(api, "Content-Type: application/x-www-form-urlencoded", strings.NewReader(message))
@@ -86,6 +103,7 @@ func Echo(message string) (string, error) {
 	}
 	defer resp.Body.Close()
 
+	// Parse HTTP response
 	replyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
