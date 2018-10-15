@@ -18,10 +18,10 @@ var (
 )
 
 func init() {
-	baseurlFile = "/etc/osbapi-svc-credentials/baseurl"
-	caFile = "/etc/osbapi-svc-credentials/ca"
-	keyFile = "/etc/osbapi-svc-credentials/key"
-	certFile = "/etc/osbapi-svc-credentials/cert"
+	baseurlFile = "/etc/osbapi-svc-credential/baseurl"
+	caFile = "/etc/osbapi-svc-credential/ca"
+	keyFile = "/etc/osbapi-svc-credential/key"
+	certFile = "/etc/osbapi-svc-credential/cert"
 }
 
 // Setup ...
